@@ -70,4 +70,42 @@ def rfmclusters(df):
     return plt.show()
 
 
+def clustering (df, k):
+    """
+    returns a cluster per each user,
+    per category: recency, frequency, monetary.
+    
+    """
+    kmeans = KMeans(n_clusters=k)
+    
+    kmeans.fit(df[['recency']])
+    df['r_cluster'] = kmeans.predict(df[['recency']])
+    
+    kmeans.fit(df[['frequency']])
+    df['f_cluster'] = kmeans.predict(df[['frequency']])
+    
+    kmeans.fit(df[['monetary']])
+    df['m_cluster'] = kmeans.predict(df[['monetary']])
+    
+    return df
+
+
+
+def score (df):
+    """assign a score to a user based on their rfm values
+    """
+
+    df['score'] = df['r_cluster'] + df['f_cluster'] + df['m_cluster']
+    return df 
+
+
+def segmentation(df):
+    """
+    assign a category to a customer based on their score
+    """ 
+    
+    df['segment'] = 'Low-Value'
+    df.loc[df['score'] >= 1,'segment'] = 'Mid-Value' 
+    df.loc[df['score'] >= 4,'segment'] = 'High-Value' 
+    return df
     
